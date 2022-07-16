@@ -32,6 +32,7 @@ Route::group(['prefix' => 'tasks'], function () {
         Route::post('store', 'store');
         Route::get('show/{id}', 'show');
         Route::post('update/{task}', 'update');
+        Route::post('update-status/{task}', 'updateStatus');
         Route::post('delete/{task}', 'destroy');
     });
 });

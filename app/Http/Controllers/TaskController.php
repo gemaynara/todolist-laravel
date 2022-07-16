@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreTaskRequest;
-use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Requests\StoreOrUpdateTaskRequest;
+use App\Http\Requests\UpdateStatusTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -49,7 +49,7 @@ class TaskController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(StoreTaskRequest $request)
+    public function store(StoreOrUpdateTaskRequest $request)
     {
         $loggedUser = auth()->user();
 
@@ -98,21 +98,17 @@ class TaskController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function update(UpdateTaskRequest $request, Task $task)
+
+    public function update(StoreOrUpdateTaskRequest $request, $id)
     {
-        $data = $request->only('name', 'status');
+        $data = $request->all();
+
+        $task = Task::query()->find($id);
 
         $loggedUser = auth()->user();
 
         if ($task->user_id == $loggedUser->id) {
-            $task = $task->update($data);
+            $task->update($data);
 
             return response()->json([
                 'status' => 'success',
@@ -120,6 +116,29 @@ class TaskController extends Controller
                 'data' => $task,
             ]);
         }
+
+        return response()->json(['error' => 'Não é possível alterar  a task'], 200);
+    }
+
+
+    public function updateStatus(UpdateStatusTaskRequest $request, $id)
+    {
+        $data = $request->only('status');
+
+        $task = Task::query()->find($id);
+
+        $loggedUser = auth()->user();
+
+        if ($task->user_id == $loggedUser->id) {
+            $task->update($data);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Status Task updated successfully',
+                'data' => $task,
+            ]);
+        }
+
         return response()->json(['error' => 'Não é possível alterar  a task'], 200);
     }
 

@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Task;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class UpdateTaskRequest extends FormRequest
+class StoreOrUpdateTaskRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,13 +24,7 @@ class UpdateTaskRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255',
-            'status' => ['required',
-                Rule::in(
-                    Task::PENDING,
-                    Task::WORKING,
-                    Task::FINISHED
-                )]
+            'name' => 'required|string|max:255'
         ];
     }
 }
