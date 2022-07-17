@@ -5,17 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreOrUpdateTaskRequest;
 use App\Http\Requests\UpdateStatusTaskRequest;
 use App\Models\Task;
-use Illuminate\Http\Request;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 class TaskController extends Controller
 {
-    protected $user;
+
 
     public function __construct()
     {
-        $this->user = JWTAuth::parseToken()->authenticate();
+
     }
 
     /**
@@ -25,11 +23,15 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = $this->user->tasks()->get();
+        $loggedUser = auth()->user();
+        $tasks = Task::query()->where('user_id', $loggedUser->id)
+            ->orderByDesc('id')
+            ->get();
+
 
         return response()->json([
             'status' => 'success',
-            'data' => $tasks,
+            'tasks' => $tasks,
         ]);
     }
 
@@ -60,7 +62,7 @@ class TaskController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Task created successfully',
+            'message'=> 'Tarefa criada com sucesso!',
             'data' => $task,
         ]);
     }
@@ -83,7 +85,7 @@ class TaskController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data' => $task,
+            'task' => $task,
         ]);
     }
 
@@ -112,12 +114,15 @@ class TaskController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Task updated successfully',
+                'message'=> 'Tarefa alterada com sucesso!',
                 'data' => $task,
             ]);
         }
 
-        return response()->json(['error' => 'Não é possível alterar  a task'], 200);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Não é possível alterar a tarefa'
+        ], 400);
     }
 
 
@@ -134,12 +139,15 @@ class TaskController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Status Task updated successfully',
+                'message'=> 'Situação da tarefa alterada com sucesso!',
                 'data' => $task,
             ]);
         }
 
-        return response()->json(['error' => 'Não é possível alterar  a task'], 200);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Não é possível alterar a tarefa'
+        ], 400);
     }
 
     /**
@@ -155,18 +163,21 @@ class TaskController extends Controller
         $findTask = Task::query()->where('id', $task->id)
             ->where('user_id', $loggedUser->id)->first();
         if (empty($findTask)) {
-            return response()->json(['error' => 'Não encontrado.'], 200);
+            return response()->json(['error' => 'Não encontrado.'], 400);
         }
 
         if ($task->user_id == $loggedUser->id) {
             $task->delete();
             return response()->json([
                 'status' => 'success',
-                'message' => 'Task deleted successfully',
+                'message'=> 'Tarefa removida com sucesso!',
                 'data' => $task
             ]);
         }
 
-        return response()->json(['error' => 'Não é possível deletar a task'], 200);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Não é possível apagar  a tarefa'
+        ], 400);
     }
 }

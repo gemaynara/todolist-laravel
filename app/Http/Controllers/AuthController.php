@@ -8,13 +8,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
-use JWTAuth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+//        $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
     public function login(Request $request)
@@ -27,7 +27,10 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->messages()], 200);
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->messages()
+            ], 400);
         }
 
 
@@ -48,22 +51,25 @@ class AuthController extends Controller
                 'token' => $token,
                 'type' => 'bearer',
             ],
-            'data' => $user
+            'user' => $user
         ]);
     }
 
     public function register(Request $request)
     {
-        $data = $request->only('name', 'email', 'password');
+        $data = $request->only('name', 'email', 'password', 'password_confirm');
 
         $validator = Validator::make($data, [
             'name' => 'required|string',
             'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6'
+            'password' => 'required|string|min:6|same:password_confirm',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->messages()], 200);
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->messages()
+            ], 400);
         }
 
         $data['password'] = Hash::make($data['password']);
@@ -73,13 +79,39 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'User created successfully',
+            'message' => 'Usuário criado com sucesso!',
             'authorization' => [
                 'token' => $token,
                 'type' => 'bearer',
             ],
-            'data' => $user
+            'user' => $user
         ]);
+    }
+
+    public function getUser()
+    {
+        $user = JWTAuth::user();
+//        $user = JWTAuth::authenticate($request->token);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Usuário logado',
+            'user' => $user
+        ]);
+    }
+
+
+    public function refresh()
+    {
+        if ($token = $this->guard()->refresh()) {
+            return response()
+                ->json(['status' => 'successs'], 200)
+                ->header('Authorization', $token);
+        }
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Não é possível atualizar o token'
+        ], 400);
     }
 
     public function logout()
@@ -87,7 +119,7 @@ class AuthController extends Controller
         Auth::logout();
         return response()->json([
             'status' => 'success',
-            'message' => 'Successfully logged out',
+            'message' => 'Sessão encerrada com sucesso!',
         ]);
     }
 

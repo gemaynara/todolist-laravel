@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\AuthController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,19 +24,22 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
     Route::post('register', 'register');
     Route::post('logout', 'logout');
+    Route::get('refresh', 'refresh');
 
 });
 
-Route::group(['prefix' => 'tasks'], function () {
-    Route::controller(TaskController::class)->group(function () {
-        Route::get('/', 'index');
-        Route::post('store', 'store');
-        Route::get('show/{id}', 'show');
-        Route::post('update/{task}', 'update');
-        Route::post('update-status/{task}', 'updateStatus');
-        Route::post('delete/{task}', 'destroy');
+Route::middleware('jwt.auth')->group(function () {
+    Route::get('user', [AuthController::class, 'getUser']);
+
+    Route::group(['prefix' => 'tasks'], function () {
+        Route::controller(TaskController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::post('store', 'store');
+            Route::get('show/{id}', 'show');
+            Route::post('update/{task}', 'update');
+            Route::post('update-status/{task}', 'updateStatus');
+            Route::delete('delete/{task}', 'destroy');
+        });
     });
 });
-
-
 
