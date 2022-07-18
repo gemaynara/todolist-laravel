@@ -19,7 +19,7 @@ class CreateTasksTable extends Migration
             $table->foreign('user_id')->on('users')->references('id');
             $table->string('name');
             $table->enum('status', ['Pendente', 'Em Andamento', 'Finalizado']);
-            $table->timestamp('finished_at')->nullable();
+            $table->date('finished_at')->nullable();
             $table->timestamps();
         });
     }

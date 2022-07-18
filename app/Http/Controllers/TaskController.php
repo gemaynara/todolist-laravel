@@ -59,6 +59,7 @@ class TaskController extends Controller
             'user_id' => $loggedUser->id,
             'name' => $request->name,
             'status' => $request->status,
+            'finished_at' => $request->finished_at,
         ]);
 
         return response()->json([

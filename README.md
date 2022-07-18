@@ -11,6 +11,12 @@ composer install
 Em seguida, ajustar o banco de dados a partir do arquivo .env.example
 
 
+Criar todas as tabelas
+```bash
+php artisan migrate 
+```
+
+
 Criar um usuário via comando
 ```bash
 php artisan add:user 

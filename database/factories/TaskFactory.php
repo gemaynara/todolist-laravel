@@ -18,10 +18,10 @@ class TaskFactory extends Factory
         $status = $this->faker->randomElement([Task::PENDING, Task::WORKING, Task::FINISHED]);
         $user = User::query()->count();
         return [
-            'user_id' =>$this->faker->numberBetween(1, $user),
+            'user_id' => $this->faker->numberBetween(1, $user),
             'name' => $this->faker->sentence(3),
             'status' => $status,
-            'finished_at' => $status == Task::FINISHED ? $this->faker->dateTimeThisYear(): null
+            'finished_at' => $this->faker->date()
         ];
     }
 }
