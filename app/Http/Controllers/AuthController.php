@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 
+use App\Mail\SendMailCreateUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -14,7 +16,7 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-//        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
     public function login(Request $request)
@@ -72,9 +74,11 @@ class AuthController extends Controller
             ], 400);
         }
 
+        $data['is_admin']=1;
         $data['password'] = Hash::make($data['password']);
         $user = User::create($data);
 
+        Mail::to($user->email)->queue(new SendMailCreateUser($user));
         $token = JWTAuth::fromUser($user);
 
         return response()->json([

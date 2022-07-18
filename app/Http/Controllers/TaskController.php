@@ -58,6 +58,7 @@ class TaskController extends Controller
         $task = Task::create([
             'user_id' => $loggedUser->id,
             'name' => $request->name,
+            'status' => $request->status,
         ]);
 
         return response()->json([
@@ -125,30 +126,6 @@ class TaskController extends Controller
         ], 400);
     }
 
-
-    public function updateStatus(UpdateStatusTaskRequest $request, $id)
-    {
-        $data = $request->only('status');
-
-        $task = Task::query()->find($id);
-
-        $loggedUser = auth()->user();
-
-        if ($task->user_id == $loggedUser->id) {
-            $task->update($data);
-
-            return response()->json([
-                'status' => 'success',
-                'message'=> 'Situação da tarefa alterada com sucesso!',
-                'data' => $task,
-            ]);
-        }
-
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Não é possível alterar a tarefa'
-        ], 400);
-    }
 
     /**
      * Remove the specified resource from storage.

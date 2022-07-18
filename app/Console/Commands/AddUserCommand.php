@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -15,7 +16,7 @@ class AddUserCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'user:add {name?} {email?}';
+    protected $signature = 'user:add';
 
     /**
      * The console command description.
@@ -43,44 +44,24 @@ class AddUserCommand extends Command
     {
         $this->info('Insira os dados para criar um novo usuário');
 
-        $name = $this->argument('name');
+        $name = $this->ask('Seu nome');
 
-        if (empty($name)) {
-            $name = $this->ask('Seu nome');
-        }
-
-        $email = $this->argument('email');
-        if (empty($email)) {
-            $email = $this->ask('Seu e-mail');
-        }
+        $email = $this->ask('Seu e-mail');
 
         $password = $this->secret('Senha');
         $confirmed = $this->secret('Repita a senha');
 
+        $admin = $this->ask('Usuário admin? [s/n]');
         $data = [
             'name' => $name,
             'email' => $email,
             'password' => $password,
-            'confirmed' => $confirmed
+            'confirmed' => $confirmed,
+            'is_admin' => $admin == 's' ?? false
         ];
 
         try {
-            $validator = Validator::make($data, [
-                'name' => ['required'],
-                'email' => ['required', 'email', 'unique:users,email'],
-                'password' => ['required', 'min:6', 'same:confirmed'],
-            ]);
-
-            if ($validator->fails()) {
-                $this->error('Erro ao criar usuário:');
-                foreach ($validator->errors()->all() as $error) {
-                    $this->error($error);
-                }
-                return false;
-            }
-
-            $data['password'] = Hash::make($password);
-            User::query()->create($data);
+            $user = UserService::create($data);
 
             $this->info('Usuário criado com sucesso!');
         } catch (Exception $e) {

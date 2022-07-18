@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Task;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreOrUpdateTaskRequest extends FormRequest
 {
@@ -24,7 +26,15 @@ class StoreOrUpdateTaskRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:255'
+            'name' => 'required|string|max:255',
+            'status' => [
+                'required',
+                Rule::in(
+                    Task::PENDING,
+                    Task::WORKING,
+                    Task::FINISHED
+                )
+            ]
         ];
     }
 }
