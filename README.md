@@ -16,6 +16,11 @@ Criar um usuário via comando
 php artisan add:user 
 ```
 
+Rodar seeder para criar dados fakes de tarefas(opcional)
+```bash
+php artisan db:seeder 
+```
+
 Iniciar o servidor
 ```bash
 php artisan serve
