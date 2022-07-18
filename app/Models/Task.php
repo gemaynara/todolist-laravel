@@ -18,12 +18,10 @@ class Task extends Model
     protected $fillable = [
         'user_id',
         'name',
-        'status'
+        'status',
+        'finished_at'
     ];
 
-    protected $casts = [
-        'finished_at' => 'datetime',
-    ];
 
     public function user()
     {
