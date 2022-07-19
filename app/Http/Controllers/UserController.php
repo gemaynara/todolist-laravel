@@ -77,7 +77,7 @@ class UserController extends Controller
         }
 
         Mail::to($user->email)->queue(new SendMailDeleteUser($user));
-        $user->tasks->delete();
+        $user->tasks()->delete();
         $user->delete();
 
         return response()->json([
