@@ -75,9 +75,11 @@ class UserController extends Controller
         if (empty($user)) {
             return response()->json(['error' => 'Não encontrado.'], 400);
         }
+
         $user->tasks()->delete();
-        Mail::to($user->email)->queue(new SendMailDeleteUser($user));
         $user->delete();
+
+        Mail::to($user->email)->queue(new SendMailDeleteUser($user));
 
         return response()->json([
             'status' => 'success',

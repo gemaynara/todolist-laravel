@@ -34,7 +34,7 @@ class UserService
         $validator = Validator::make($data, [
             'name' => 'required|string',
             'email' => 'required|email|unique:users,id,' . $id,
-            'password' => 'required|string|min:6|same:password_confirm',
+            'password' => 'required|string|min:4|same:password_confirm',
             'is_admin' => 'required|boolean',
         ]);
 
