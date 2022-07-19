@@ -61,8 +61,7 @@ class AddUserCommand extends Command
         ];
 
         try {
-            $user = UserService::create($data);
-
+            User::query()->create($data);
             $this->info('Usuário criado com sucesso!');
         } catch (Exception $e) {
             $this->error($e->getMessage());

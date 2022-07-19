@@ -1,6 +1,21 @@
 <h1 align="center"> API - Gestão de usuários e lista de tarefas </h1>
 
 
+[Live Demo](https://todolist-app-vue.herokuapp.com/)
+
+> **Acesso admin:**
+> 
+> **email**: admin@admin.com
+> 
+> **senha**: secret
+
+> **Acesso não admin:**
+> 
+> **email**: user@user.com
+> 
+> **senha**: secret
+> 
+
 ## 🛠️ Para rodar o projeto
 
 Instale as dependências
@@ -19,7 +34,7 @@ php artisan migrate
 
 Criar um usuário via comando
 ```bash
-php artisan add:user 
+php artisan user:add 
 ```
 
 Rodar seeder para criar dados fakes de tarefas(opcional)
@@ -32,6 +47,8 @@ Iniciar o servidor
 php artisan serve
 ```
 
+
+
 ### 🛠 Tecnologias
 
 As seguintes ferramentas foram usadas na construção do projeto:
@@ -40,10 +57,6 @@ As seguintes ferramentas foram usadas na construção do projeto:
 - [Laravel v8](https://laravel.com/docs/8.x/releases)
 
 
-## Funcionalidades
-
-- `Tarefas`: Inserir, alterar ou remover uma tarefa.
-- `Usuários`: Inserir, alterar ou remover um usuário.
 
 ## Autor
 
