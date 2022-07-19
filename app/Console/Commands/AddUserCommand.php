@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
-use App\Services\UserService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -38,7 +37,7 @@ class AddUserCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return \Illuminate\Support\MessageBag
      */
     public function handle()
     {
@@ -60,7 +59,19 @@ class AddUserCommand extends Command
             'is_admin' => $admin == 's' ?? false
         ];
 
+        $validator = Validator::make($data, [
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:4|same:password_confirm',
+            'is_admin' => 'required|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return $validator->messages();
+        }
+
         try {
+            $data['password'] = Hash::make($data['password']);
             User::query()->create($data);
             $this->info('Usuário criado com sucesso!');
         } catch (Exception $e) {
