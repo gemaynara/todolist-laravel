@@ -37,7 +37,7 @@ class AddUserCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return \Illuminate\Support\MessageBag
+     * @return false
      */
     public function handle()
     {
@@ -55,7 +55,7 @@ class AddUserCommand extends Command
             'name' => $name,
             'email' => $email,
             'password' => $password,
-            'confirmed' => $confirmed,
+            'password_confirm' => $confirmed,
             'is_admin' => $admin == 's' ?? false
         ];
 
@@ -66,9 +66,13 @@ class AddUserCommand extends Command
             'is_admin' => 'required|boolean',
         ]);
 
-        if ($validator->fails()) {
-            return $validator->messages();
-        }
+            if ($validator->fails()) {
+                $this->error('Erro ao criar usuário:');
+                foreach ($validator->errors()->all() as $error) {
+                    $this->error($error);
+                }
+                return false;
+            }
 
         try {
             $data['password'] = Hash::make($data['password']);
